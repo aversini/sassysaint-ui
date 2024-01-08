@@ -48,3 +48,77 @@ h1.heading {
 		opacity: 0;
 	}
 }
+
+@layer components {
+	/**
+	 * There are 2 labels, one visible and one
+	 * hidden for accessibility.
+	 *
+	 * - The hidden label is used to describe the input
+	 *   field for screen readers.
+	 * - The visible label is used for the animation.
+	 *
+	 * Here we want to apply animation to the visible label.
+	 * It's the one that has the aria-hidden attribute set
+	 * to true.
+	 */
+	.av-text-input-wrapper label[aria-hidden="true"],
+	.av-text-area-wrapper label[aria-hidden="true"] {
+		/* move the label inline */
+		/* transform: translate(18px, 0) scale(1); */
+		/* transform-origin: top left; */
+		/* transition: var(--av-text-area-wrapper-transition, all 0.2s ease-out); */
+	}
+
+	/**
+   * Focus is trapped at the input field level, and we
+	 * want to move the label when this happens.
+	 * We could use focus-within, but it would only help
+	 * moving the label up. Next we need to move it back
+	 * when the focus is lost, but only if there is not
+	 * entered text. To achieve this, we use a trick with
+	 * the placeholder. The placeholder is always set to
+	 * " " (a space), and we use the :placeholder-shown
+	 * pseudo-class to detect when the placeholder is
+	 * shown. When it is not shown, we move the label
+	 * back down.
+	 * Therefore, instead of using focus-within on the label
+	 * itself, we use +label on the input. It also means
+	 * that in the DOM, the label must be placed after the
+	 * input.
+   */
+	.av-text-input:focus + label[aria-hidden="true"],
+	.av-text-input:not(:placeholder-shown) + label[aria-hidden="true"],
+	.av-text-area:focus + label[aria-hidden="true"],
+	.av-text-area:not(:placeholder-shown) + label[aria-hidden="true"] {
+		/* move the label up */
+		transform: translate(18px, var(--av-text-area-label, -25px)) scale(0.75);
+	}
+
+	.av-text-input-helper-text,
+	.av-text-area-helper-text {
+		transform: translate(18px, var(--av-text-area-helper-text, 32px))
+			scale(0.75);
+		transform-origin: top left;
+	}
+
+	.av-text-input__control--right,
+	.av-text-area__control--right {
+		right: 18px;
+	}
+
+	@keyframes blink {
+		50% {
+			fill: transparent;
+		}
+	}
+	.av-spinner__dot {
+		animation: 1s blink infinite;
+	}
+	.av-spinner__dot:nth-child(2) {
+		animation-delay: 250ms;
+	}
+	.av-spinner__dot:nth-child(3) {
+		animation-delay: 500ms;
+	}
+}
